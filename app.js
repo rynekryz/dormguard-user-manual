@@ -45,7 +45,8 @@ const state = {
   uiVisible:true,
   uiTimer:null,
   flip:null,
-  forceSinglePage:false
+  forceSinglePage:false,
+  pages:[]
 };
 
 function fileTitle(){
@@ -114,13 +115,14 @@ async function buildPages(){
   const ordered = [...book.children].sort((a,b)=>+a.dataset.page - +b.dataset.page);
   book.innerHTML = '';
   ordered.forEach(el=>book.appendChild(el));
+  state.pages = [...book.children];
 }
 
 function computeSize(){
   const availW = stage.clientWidth * 0.9;
   const availH = (stage.clientHeight - 150) * 0.92;
   const aspect = state.pageAspect;
-  const isWide = window.innerWidth > 860 && state.pageCount > 1;
+  const isWide = window.innerWidth > 800 && state.pageCount > 1;
   const factor = (isWide && !state.forceSinglePage) ? 2 : 1;
 
   let w = availW / factor;
@@ -134,6 +136,9 @@ function computeSize(){
 
 function initFlip(){
   if(state.flip && typeof state.flip.destroy === 'function') state.flip.destroy();
+
+  book.innerHTML = '';
+  state.pages.forEach(p => book.appendChild(p));
 
   const {width, height} = computeSize();
   const pageEls = book.querySelectorAll('.page');
