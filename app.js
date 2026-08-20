@@ -22,6 +22,7 @@ const btnZoomReset = document.getElementById('btnZoomReset');
 const zoomLevel = document.getElementById('zoomLevel');
 const btnFullscreen = document.getElementById('btnFullscreen');
 const btnMenu = document.getElementById('btnMenu');
+const btnLayout = document.getElementById('btnLayout');
 const btnTocClose = document.getElementById('btnTocClose');
 const tocPanel = document.getElementById('tocPanel');
 const tocScrim = document.getElementById('tocScrim');
@@ -43,7 +44,8 @@ const state = {
   pageAspect:0.7727,
   uiVisible:true,
   uiTimer:null,
-  flip:null
+  flip:null,
+  forceSinglePage:false
 };
 
 function fileTitle(){
@@ -119,7 +121,7 @@ function computeSize(){
   const availH = (stage.clientHeight - 150) * 0.92;
   const aspect = state.pageAspect;
   const isWide = window.innerWidth > 860 && state.pageCount > 1;
-  const factor = isWide ? 2 : 1;
+  const factor = (isWide && !state.forceSinglePage) ? 2 : 1;
 
   let w = availW / factor;
   let h = w / aspect;
@@ -131,6 +133,8 @@ function computeSize(){
 }
 
 function initFlip(){
+  if(state.flip && typeof state.flip.destroy === 'function') state.flip.destroy();
+
   const {width, height} = computeSize();
   const pageEls = book.querySelectorAll('.page');
 
@@ -331,6 +335,13 @@ function toggleFullscreen(){
     document.exitFullscreen().catch(()=>{});
   }
 }
+function toggleLayout(){
+  state.forceSinglePage = !state.forceSinglePage;
+  initFlip();
+  goTo(state.current);
+}
+btnLayout.addEventListener('click', toggleLayout);
+
 btnFullscreen.addEventListener('click', toggleFullscreen);
 
 function openToc(){
