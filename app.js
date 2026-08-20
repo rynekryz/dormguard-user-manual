@@ -1,6 +1,6 @@
 import * as pdfjsLib from './vendor/pdf.min.mjs';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = './vendor/pdf.worker.min.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('vendor/pdf.worker.min.mjs', window.location.href).href;
 
 const stage = document.getElementById('stage');
 const bookWrap = document.getElementById('bookWrap');
@@ -27,7 +27,7 @@ const tocScrim = document.getElementById('tocScrim');
 const tocGrid = document.getElementById('tocGrid');
 const docTitle = document.getElementById('docTitle');
 
-const PDF_URL = './flipbook.pdf';
+const PDF_URL = new URL('flipbook.pdf', window.location.href).href;
 
 const state = {
   pdf:null,
@@ -55,7 +55,7 @@ function fileTitle(){
 
 async function loadPdf(){
   try{
-    const task = pdfjsLib.getDocument(PDF_URL);
+    const task = pdfjsLib.getDocument({url:PDF_URL});
     task.onProgress = (p)=>{
       if(p.total){
         const pct = Math.min(100, Math.round((p.loaded/p.total)*100));
@@ -77,7 +77,7 @@ async function loadPdf(){
     loader.classList.add('hidden');
     buildToc();
   }catch(err){
-    loaderText.textContent = 'Could not load flipbook.pdf';
+    loaderText.textContent = 'Could not load flipbook.pdf — ' + (err && err.message ? err.message : 'unknown error');
     console.error(err);
   }
 }
