@@ -122,7 +122,9 @@ function computeSize(){
   const availW = stage.clientWidth * 0.9;
   const availH = (stage.clientHeight - 150) * 0.92;
   const aspect = state.pageAspect;
-  const isWide = window.innerWidth > 800 && state.pageCount > 1;
+
+  // Use 600px as the breakpoint for mobile/small screens
+  const isWide = window.innerWidth > 600 && state.pageCount > 1;
   const factor = (isWide && !state.forceSinglePage) ? 2 : 1;
 
   let w = availW / factor;
@@ -146,7 +148,7 @@ function initFlip(){
   state.flip = new PageFlip(book, {
     width,
     height,
-    size:'stretch',
+    size: state.forceSinglePage ? 'fixed' : 'stretch',
     minWidth:200,
     maxWidth:1400,
     minHeight:280,
